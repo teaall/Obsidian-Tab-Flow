@@ -380,5 +380,9 @@
 			"center": "Center",
 			"right": "Right"
 		}
+	},
+	"fullscreen": {
+		"enter": "Enter fullscreen view",
+		"exit": "Exit fullscreen view"
 	}
 }

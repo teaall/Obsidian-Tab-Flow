@@ -208,6 +208,33 @@
 	z-index: 1;
 }
 
+/* Fullscreen exit button (floating, semi-transparent) */
+.tablature-view .fullscreen-exit-button {
+	position: absolute;
+	top: 8px;
+	right: 8px;
+	z-index: 200;
+	width: 32px;
+	height: 32px;
+	border-radius: 50%;
+	border: 1px solid var(--background-modifier-border);
+	background: var(--background-secondary);
+	color: var(--text-muted);
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	opacity: 0.6;
+	transition: opacity 0.2s, background 0.2s;
+}
+
+.tablature-view .fullscreen-exit-button:hover,
+.tablature-view .fullscreen-exit-button:focus-visible {
+	opacity: 1;
+	background: var(--background-modifier-hover);
+	color: var(--text-normal);
+}
+
 /* 打印时隐藏滚动条 */
 @media print {
 	.tablature-view .alphatab-viewport {

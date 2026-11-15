@@ -379,5 +379,9 @@
 			"center": "居中",
 			"right": "右"
 		}
+	},
+	"fullscreen": {
+		"enter": "进入全屏视图",
+		"exit": "退出全屏视图"
 	}
 }
