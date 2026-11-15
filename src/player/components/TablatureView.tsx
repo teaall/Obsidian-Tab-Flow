@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { Minimize } from 'lucide-react';
+import { Platform } from 'obsidian';
 import type { PlayerController } from '../PlayerController';
 import { PlayBar } from './PlayBar';
 import { DebugBar } from './DebugBar';
@@ -131,6 +132,19 @@ export const TablatureView: React.FC<TablatureViewProps> = ({ controller, option
 		};
 		document.addEventListener('keydown', onKey);
 		return () => document.removeEventListener('keydown', onKey);
+	}, [fullscreen]);
+
+	// 移动端全屏时隐藏 Obsidian 底部导航栏
+	// （没有内建设置可关闭它，进入全屏时动态注入 CSS，退出时移除）
+	useEffect(() => {
+		if (!Platform.isMobile) return;
+		if (!fullscreen) return;
+		const style = document.createElement('style');
+		style.textContent = '.is-mobile .mobile-navbar { display: none !important; }';
+		document.head.appendChild(style);
+		return () => {
+			document.head.removeChild(style);
+		};
 	}, [fullscreen]);
 
 	useEffect(() => {
