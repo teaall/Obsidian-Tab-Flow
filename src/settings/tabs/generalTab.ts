@@ -1,4 +1,4 @@
-import { App, Notice, Setting } from 'obsidian';
+import { App, Notice, Platform, Setting } from 'obsidian';
 import TabFlowPlugin from '../../main';
 import { ASSET_FILES } from '../../services/ResourceLoaderService';
 import { vaultPath } from '../../utils';
@@ -166,38 +166,38 @@ export async function renderGeneralTab(
 		})();
 	};
 
-	const openDirBtn = buttons.createEl('button', {
-		text: t('assetManagement.openPluginRootDir'),
-		cls: 'mod-info',
-	});
-	openDirBtn.onclick = () => {
-		try {
-			const adapter = app.vault.adapter as { getBasePath?: () => string };
-			const basePath =
-				typeof adapter.getBasePath === 'function' ? adapter.getBasePath() : undefined;
-			if (!basePath) {
-				new Notice(t('assetManagement.desktopOnly'));
-				return;
+	if (Platform.isDesktopApp) {
+		const openDirBtn = buttons.createEl('button', {
+			text: t('assetManagement.openPluginRootDir'),
+			cls: 'mod-info',
+		});
+		openDirBtn.onclick = () => {
+			try {
+				const adapter = app.vault.adapter as { getBasePath?: () => string };
+				const basePath =
+					typeof adapter.getBasePath === 'function' ? adapter.getBasePath() : undefined;
+				if (!basePath) {
+					new Notice(t('assetManagement.desktopOnly'));
+					return;
+				}
+				const pluginDir = joinPath(
+					basePath,
+					app.vault.configDir,
+					'plugins',
+					plugin.manifest.id
+				);
+				const mainJsPath = joinPath(pluginDir, 'main.js');
+				const shellLike = getElectronShell();
+				if (!shellLike) {
+					new Notice(t('assetManagement.desktopOnly'));
+					return;
+				}
+				shellLike.showItemInFolder(mainJsPath);
+			} catch (e) {
+				new Notice(t('assetManagement.openDirFailed') + ': ' + formatError(e));
 			}
-			// TO FIX: Obsidian的配置目录不是固定的，应该使用 Vault#configDir
-			// 原因: 用户可以配置配置目录的位置，不能假设是 .obsidian
-			const pluginDir = joinPath(
-				basePath,
-				app.vault.configDir,
-				'plugins',
-				plugin.manifest.id
-			);
-			const mainJsPath = joinPath(pluginDir, 'main.js');
-			const shellLike = getElectronShell();
-			if (!shellLike) {
-				new Notice(t('assetManagement.desktopOnly'));
-				return;
-			}
-			shellLike.showItemInFolder(mainJsPath);
-		} catch (e) {
-			new Notice(t('assetManagement.openDirFailed') + ': ' + formatError(e));
-		}
-	};
+		};
+	}
 
 	restartBtn.onclick = () => {
 		void (async () => {
