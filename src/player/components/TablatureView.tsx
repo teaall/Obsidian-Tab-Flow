@@ -134,13 +134,15 @@ export const TablatureView: React.FC<TablatureViewProps> = ({ controller, option
 		return () => document.removeEventListener('keydown', onKey);
 	}, [fullscreen]);
 
-	// 移动端全屏时隐藏 Obsidian 底部导航栏
-	// （没有内建设置可关闭它，进入全屏时动态注入 CSS，退出时移除）
+	// 移动端全屏时隐藏 Obsidian 顶部栏 + 底部导航栏
+	// （没有内建设置可关闭它们，进入全屏时动态注入 CSS，退出时移除）
+	// 注意：顶部栏的选择器因 Obsidian 版本可能不同，如未生效请按需调整
 	useEffect(() => {
 		if (!Platform.isMobile) return;
 		if (!fullscreen) return;
 		const style = document.createElement('style');
-		style.textContent = '.is-mobile .mobile-navbar { display: none !important; }';
+		style.textContent =
+			'.is-mobile .mobile-navbar, .is-mobile .mobile-view-header { display: none !important; }';
 		document.head.appendChild(style);
 		return () => {
 			document.head.removeChild(style);
