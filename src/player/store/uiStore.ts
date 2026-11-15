@@ -35,12 +35,17 @@ export interface UIStore {
 		progress?: number; // 0-100
 	};
 	toasts: ToastMessage[];
+	fullscreen: boolean;
 
 	// Actions - Panel Management
 	togglePanel: (panel: keyof UIStore['panels']) => void;
 	showPanel: (panel: keyof UIStore['panels']) => void;
 	hidePanel: (panel: keyof UIStore['panels']) => void;
 	hideAllPanels: () => void;
+
+	// Actions - Fullscreen
+	setFullscreen: (value: boolean) => void;
+	toggleFullscreen: () => void;
 
 	// Actions - Loading State
 	setLoading: (isLoading: boolean, message?: string, progress?: number) => void;
@@ -74,6 +79,7 @@ export function createUIStore(): UseBoundStore<StoreApi<UIStore>> {
 			message: '',
 		},
 		toasts: [],
+		fullscreen: false,
 
 		// Panel Management
 		togglePanel: (panel) => {
@@ -114,6 +120,15 @@ export function createUIStore(): UseBoundStore<StoreApi<UIStore>> {
 					mediaSyncPanel: false,
 				},
 			});
+		},
+
+		// Fullscreen
+		setFullscreen: (value) => {
+			set({ fullscreen: value });
+		},
+
+		toggleFullscreen: () => {
+			set((state) => ({ fullscreen: !state.fullscreen }));
 		},
 
 		// Loading State
@@ -169,6 +184,7 @@ export function createUIStore(): UseBoundStore<StoreApi<UIStore>> {
 					message: '',
 				},
 				toasts: [],
+				fullscreen: false,
 			});
 		},
 	}));

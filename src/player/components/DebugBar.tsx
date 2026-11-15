@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { Download } from 'lucide-react';
+import { Download, Maximize, Minimize } from 'lucide-react';
 import type { PlayerController } from '../PlayerController';
+import { t } from '../../i18n';
 import { PlayControls } from './PlayControls';
 import { TimeDisplay } from './TimeDisplay';
 import { MetronomeToggle } from './MetronomeToggle';
@@ -48,6 +49,8 @@ export const DebugBar: React.FC<DebugBarProps> = ({
 }) => {
 	// 使用 controller 的实例 store
 	const runtimeStore = controller.getRuntimeStore();
+	const uiStore = controller.getUIStore();
+	const fullscreen = uiStore((s) => s.fullscreen);
 
 	// 订阅播放状态
 	const playbackState = runtimeStore((s) => s.playbackState);
@@ -80,12 +83,23 @@ export const DebugBar: React.FC<DebugBarProps> = ({
 				{/* 导出按钮 */}
 				<button
 					className="play-bar-button"
-					title="导出乐谱"
+					title={t('export.title')}
 					onClick={() => setExportModalOpen(true)}
 					disabled={!scoreLoaded}
 				>
 					<Download size={16} />
-					<span className="play-bar-button-text">Export</span>
+					<span className="play-bar-button-text">{t('export.export')}</span>
+				</button>
+				{/* 全屏切换按钮 */}
+				<button
+					className="play-bar-button"
+					title={fullscreen ? t('fullscreen.exit') : t('fullscreen.enter')}
+					onClick={() => uiStore.getState().toggleFullscreen()}
+				>
+					{fullscreen ? <Minimize size={16} /> : <Maximize size={16} />}
+					<span className="play-bar-button-text">
+						{fullscreen ? t('fullscreen.exit') : t('fullscreen.enter')}
+					</span>
 				</button>{' '}
 				{/* 播放控制 */}
 				<PlayControls controller={controller} isPlaying={isPlaying} canPlay={canPlay} />

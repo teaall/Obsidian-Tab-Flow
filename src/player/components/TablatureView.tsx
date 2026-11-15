@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
+import { Minimize } from 'lucide-react';
 import type { PlayerController } from '../PlayerController';
 import { PlayBar } from './PlayBar';
 import { DebugBar } from './DebugBar';
@@ -78,6 +79,7 @@ export const TablatureView: React.FC<TablatureViewProps> = ({ controller, option
 	const tracksPanelOpen = uiStore((s) => s.panels.tracksPanel);
 	const mediaSyncOpen = uiStore((s) => s.panels.mediaSyncPanel);
 	const loading = uiStore((s) => s.loading);
+	const fullscreen = uiStore((s) => s.fullscreen);
 	const error = runtimeStore((s) => s.error);
 	const errorLines =
 		error.message
@@ -118,6 +120,18 @@ export const TablatureView: React.FC<TablatureViewProps> = ({ controller, option
 	const handleToggleMediaSync = () => {
 		uiStore.getState().togglePanel('mediaSyncPanel');
 	};
+
+	// Esc 退出全屏
+	useEffect(() => {
+		if (!fullscreen) return;
+		const onKey = (e: KeyboardEvent) => {
+			if (e.key === 'Escape') {
+				uiStore.getState().setFullscreen(false);
+			}
+		};
+		document.addEventListener('keydown', onKey);
+		return () => document.removeEventListener('keydown', onKey);
+	}, [fullscreen]);
 
 	useEffect(() => {
 		if (!containerRef.current || !viewportRef.current) return;
@@ -208,10 +222,21 @@ export const TablatureView: React.FC<TablatureViewProps> = ({ controller, option
 				flexDirection: 'column',
 			}}
 		>
+			{/* 全屏退出按钮（仅全屏时显示） */}
+			{fullscreen && (
+				<button
+					type="button"
+					className="fullscreen-exit-button"
+					title="Exit fullscreen (Esc)"
+					onClick={() => uiStore.getState().setFullscreen(false)}
+				>
+					<Minimize size={16} />
+				</button>
+			)}
 			{/* 自定义顶部组件或默认 DebugBar */}
 			{customComponents?.topBar ? (
 				<customComponents.topBar controller={controller} />
-			) : showDebugBar ? (
+			) : !fullscreen && showDebugBar ? (
 				<DebugBar
 					controller={controller}
 					viewportRef={viewportRef}
@@ -325,12 +350,14 @@ export const TablatureView: React.FC<TablatureViewProps> = ({ controller, option
 					}}
 				/>
 			</div>
-			{/* 自定义底部组件或默认 PlayBar */}
-			{customComponents?.bottomBar ? (
-				<customComponents.bottomBar controller={controller} />
-			) : showPlayBar ? (
-				<PlayBar controller={controller} onTracksClick={handleToggleTracks} />
-			) : null}
+			{/* 自定义底部组件或默认 PlayBar（全屏时隐藏） */}
+			{!fullscreen && (
+				customComponents?.bottomBar ? (
+					<customComponents.bottomBar controller={controller} />
+				) : showPlayBar ? (
+					<PlayBar controller={controller} onTracksClick={handleToggleTracks} />
+				) : null
+			)}
 			{/* MediaSync Panel - 底部媒体同步面板（浮动） */}
 			{showMediaSync && (
 				<MediaSync

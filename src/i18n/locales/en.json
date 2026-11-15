@@ -577,5 +577,9 @@
 		"switchToPlayer": "Switch to player",
 		"tabPlayer": "Tab player",
 		"toggleLayout": "Toggle layout"
+	},
+	"fullscreen": {
+		"enter": "Enter fullscreen view",
+		"exit": "Exit fullscreen view"
 	}
 }
